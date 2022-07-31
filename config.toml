@@ -1,9 +1,9 @@
-baseURL = 'http://yeoleobun.github.io/' 
+baseURL = 'https://yeoleobun.github.io/blog/' 
 copyright = "yeoleobun" # cactus will use title if copyright is not set
 disqusShortname = "yeoleobun-github-io" # Used when comments is enabled. Cactus will use site title if not set
 languageCode = 'zh-cn' 
 theme = "cactus" 
-title = "yeoleobun\u0027s blog" 
+title = "yeoleobun's blog" 
 
 # Main menu which appears below site header.
 [[menu.main]]
@@ -21,16 +21,12 @@ name = "Tags"
 url = "/tags"
 weight = 3
 
-[[menu.main]]
-name = "About"
-url = "/about"
-weight = 4
+# [[menu.main]]
+# name = "About"
+# url = "/about"
+# weight = 4
 
 [markup]
-[markup.tableOfContents]
-endLevel = 4
-ordered = false
-startLevel = 2
 [markup.highlight]
 codeFences = true
 guessSyntax = false
@@ -69,7 +65,6 @@ show_updated = true # default
 [params.comments]
 enabled = true # default
 engine = "disqus" # only disqus, utterances, and cactus_comments is supported
-
 
 # the value of name should be an valid font awesome icon name (brands type)
 # https://fontawesome.com/icons?d=gallery&s=brands
