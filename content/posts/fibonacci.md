@@ -2,7 +2,6 @@
 title: "斐波那契数列"
 date: "2022-07-30"
 draft: false
-tag: ["数学"]
 math: true
 ---
 
