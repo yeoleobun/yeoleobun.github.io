@@ -29,6 +29,7 @@ repoId = 'R_kgDOHvKegA'
 category = 'General'
 categoryId = 'DIC_kwDOHvKegM4CgCXY'
 mapping = 'pathname'
+reactionsEnabled = 1
 theme = 'light'
 lang = 'zh-CN'
 
@@ -37,6 +38,8 @@ name = "yeoleobun"
 
 # Syntax highligth on code blocks
 [markup]
+  [markup.highlight]
+    style = "tango"
   [markup.goldmark]
     [markup.goldmark.extensions]
       [markup.goldmark.extensions.passthrough]
