@@ -1,8 +1,13 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
+import rehypeMathjax from 'rehype-mathjax/chtml'
+import rehypeStringify from 'rehype-stringify'
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
+import remarkMath from 'remark-math'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
 import sitemap from "@astrojs/sitemap";
 import { SITE } from "./src/config";
 
@@ -18,6 +23,7 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
+      remarkMath,
       remarkToc,
       [
         remarkCollapse,
@@ -25,6 +31,16 @@ export default defineConfig({
           test: "Table of contents",
         },
       ],
+    ],
+    rehypePlugins: [
+      [
+        rehypeMathjax,
+        {
+          chtml: {
+            fontURL: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2'
+          }
+        }
+      ]
     ],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
