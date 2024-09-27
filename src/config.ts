@@ -3,13 +3,13 @@ import type { GiscusProps } from "@giscus/react";
 
 
 export const SITE: Site = {
-  website: "https://yeoleobun.github.io/", // replace this with your deployed domain
+  website: "https://yeoleobun.github.io", // replace this with your deployed domain
   author: "L1zz",
   title: "&'static blog",
   desc: "L1zz's blog",
   lightAndDarkMode: true,
   postPerIndex: 10,
-  postPerPage: 5,
+  postPerPage: 10,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
 };
 
