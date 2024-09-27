@@ -2,6 +2,7 @@
 title: "RSA详解"
 pubDatetime: 2024-06-20T16:47:12+08:00
 tags: [算法,数论,抽象代数]
+featured: true
 ---
 
 加密算法核心是找到一对函数 $f$ 和 $g$，满足 $g \circ f = \mathbf{id}$。\
