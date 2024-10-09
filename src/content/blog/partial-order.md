@@ -27,7 +27,7 @@ tags:
 
 偏序 (partial order) 中的偏是部分的意思。偏序就是部分有序，即可能存在 $a,b \in S$，$a \not < b$ 且 $b \not < a$。（注意定义中的如果）
 
-相应的还有**全序**，即对于任意  $a,b \in S$，$a < b$ 或者 $a > b$。**在接下来关于全序的讨论中，注意讨论范围**。 
+相应的还有**全序**，即对于任意  $a,b \in S$，$a < b$ 或者 $a > b$。
 
 并发的核心就是部分有序。存在[竞争](https://en.wikipedia.org/wiki/Race_condition)的地方有序，其余的地方并行，才能在正确性和性能之间取得平衡。
 
@@ -84,18 +84,18 @@ c = a * b
 
 ## 因果
 
-注意到上述命题 3 和 4 中有一处微妙的地方。3 的前提是**所有顺序一致运行**没有数据竞争，4 的结论是**所有运行**都顺序一致。这是一个避免循环论证的手段，但他有漏洞。
+注意到上述命题 3 和 4 中有一处微妙的地方。3 需要顺序一致的运行来判断是否有数据竞争，然后得出了 4 所有运行都顺序一致的结论。
 
-从整体上看 happens-before 给出了程序顺序和同步顺序的限制，但对于非 volatile 的跨线程读写只限制了在顺序运行中不能有数据竞争。于是有下面这一个反例：
-
-[Out of thin air](https://docs.oracle.com/javase/specs/jls/se23/html/jls-17.html#jls-17.4.8-A)：
+但如果一个程序在顺序一致运行中没有数据竞争，但在其他情况又有呢？[Out of thin air](https://docs.oracle.com/javase/specs/jls/se23/html/jls-17.html#jls-17.4.8-A)：
 
 | Thread 1  | Thread 2 |
 | ------------- | ------------- |
 | r1 = x;  | r2 = y;  |
 | if (r1 != 0) y = 1;  | if (r2 != 0) x = 1;  |
 
-其中 x,y 的初始值都为 0，在顺序一致运行的情况下，`y = 1` 和 `x = 1` 都没有发生，因此没有跨线程的读写，更不存在数据竞争。按照上述命题，他是正确同步的，因此它在所有运行中都顺序一致。
+其中 x,y 的初始值都是 0，在顺序一致运行中，`y = 1` 和 `x = 1` 都没有发生，因此没有跨线程的读写，更不存在数据竞争。按照上述命题，他是正确同步的，因此它在所有运行都是顺序一致的。
+
+但是在这个运行中有环，因此它不是全序，更不是顺序一致的。
 
 ```java
 r1 = x;  // sees write of x = 1
@@ -104,13 +104,11 @@ r2 = y;  // sees write of y = 1
 x = 1;
 ```
 
-但是在这个运行中有环，因此它不是全序，更不是顺序一致的。
-
 因此有 [Causality Requirements](https://docs.oracle.com/javase/specs/jls/se23/html/jls-17.html#jls-17.4.8)，其中的重点在：
 
 6. For any read r in Ai - Ci-1, we have hbi(Wi(r), r)
 7. For any read r in (Ci - Ci-1), we have Wi(r) in Ci-1 and W(r) in Ci-1
 
-限制了一个良定义的运行必须保持 happens before 和 写读的顺序。整个过程类似于拓扑排序，一个动作依赖的动作（happens-before 和读对应的写）必须先与它提交。
+限制了一个良定义的运行必须保持 happens before 和 写读的顺序。整个过程类似于拓扑排序，一个动作依赖的动作必须先与它“提交“。
 
 但 Causality Requirements 似乎只是模型正确性的~~丑陋~~修补，在实践中是无关紧要的东西。
