@@ -2,7 +2,6 @@
 title: "等价关系的一些应用"
 pubDatetime: 2024-07-08T15:52:15+08:00
 description: "通过等价关系理解有环图转无环图，NFA 转 DFA 及一般函数转单射"
-featured: true
 tags: [数理逻辑,线性代数]
 ---
 ## 定义：

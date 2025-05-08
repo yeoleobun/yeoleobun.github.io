@@ -2,7 +2,6 @@
 title: "斐波那契数列通项公式推导"
 pubDatetime: 2022-07-30T17:05:00+08:00
 description: "斐波那契数列通项公式推导"
-featured: true
 tags: [线性代数]
 ---
 

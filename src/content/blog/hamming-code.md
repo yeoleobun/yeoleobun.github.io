@@ -1,7 +1,6 @@
 ---
 title: "汉明码和线性"
 pubDatetime: 2024-07-04T17:00:49+08:00
-featured: true
 tags: [线性代数]
 ---
 
