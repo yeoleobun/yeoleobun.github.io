@@ -30,9 +30,7 @@ Functional Dependency 是一个在数据库理论中的一个概念，它描述�
 
 对于 `group by` 语句有一个常见的误解：在 `select` 语句中除聚合函数以外的字段都需要出现在 `group by` 语句中。
 
-但包含只是 Functional Dependency 的平凡情况。例如：字段 `first_name` 依赖于 `(first_name, last_name)`。相对准确的说法是 `select` 语句中出现的非聚合函数字段需要依赖于 `group by` 语句后的字段组合，但 mysql 只能发现部分的 Functional Dependency [^1] 。
-
-> [14.19.4 Detection of Functional Dependence](https://dev.mysql.com/doc/refman/8.4/en/group-by-functional-dependence.html)
+但包含只是 Functional Dependency 的平凡情况。例如：字段 `first_name` 依赖于 `(first_name, last_name)`。相对准确的说法是 `select` 语句中出现的非聚合函数字段需要依赖于 `group by` 语句后的字段组合，但 mysql 只能发现部分 [^1] 的 Functional Dependency 。
 
 例如：
 
@@ -91,5 +89,4 @@ println!("Address of r: {:p}", r);
 
 因此 Associated Type 也是一种 Functional Dependency。
 
-
-
+[^1]: [14.19.4 Detection of Functional Dependence](https://dev.mysql.com/doc/refman/8.4/en/group-by-functional-dependence.html)
