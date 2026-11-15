@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostRow from "@/components/PostRow.astro";
+import {
+  getAllTagGroups,
+  getPostYear,
+  getPublishedPosts,
+  getTagHref,
+  type BlogPost,
+} from "@/utils/blog";
+import { SITE } from "@/site";
+
+const posts = await getPublishedPosts();
+const tagGroups = getAllTagGroups(posts);
+
+const postsByYearMap = new Map<string, BlogPost[]>();
+for (const post of posts) {
+  const year = getPostYear(post.data.modDatetime ?? post.data.pubDatetime);
+  const existing = postsByYearMap.get(year);
+  if (existing) {
+    existing.push(post);
+  } else {
+    postsByYearMap.set(year, [post]);
+  }
+}
+
+const postsByYear = Array.from(postsByYearMap.entries()).sort((a, b) =>
+  b[0].localeCompare(a[0])
+);
+---
+
+<BaseLayout
+  title={`Writing — ${SITE.title}`}
+  description="Technical notes on systems programming, Rust, Java, Linux networking, and mathematics."
+  activeNav="writing"
+>
+  <section class="mx-auto max-w-4xl px-4 pb-20 pt-10 sm:px-6 sm:pt-12">
+    <nav class="mb-6 flex items-center gap-2 text-sm text-ink-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-ink">Home</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">Writing</span>
+    </nav>
+
+    <header class="border-b border-line pb-8">
+      <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        Writing
+      </h1>
+      <p class="mt-2 text-base text-ink-muted">
+        {posts.length} articles on systems programming, Rust, concurrency,
+        category theory, and mathematics.
+      </p>
+
+      {
+        tagGroups.length > 0 && (
+          <div class="mt-6 flex flex-wrap items-center gap-2">
+            <span class="mr-1 text-xs font-medium text-ink-faint">Tags:</span>
+            {tagGroups.map((tag) => (
+              <a
+                href={getTagHref(tag.slug)}
+                class="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink-muted transition-colors hover:border-accent/40 hover:text-accent"
+              >
+                <span>{tag.label}</span>
+                <span class="font-mono text-[11px] text-ink-faint tabular-nums">
+                  {tag.count}
+                </span>
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="mt-10 space-y-10">
+      {
+        postsByYear.map(([year, yearPosts]) => (
+          <section aria-labelledby={`year-${year}`}>
+            <div class="mb-3 flex items-baseline justify-between">
+              <h2
+                id={`year-${year}`}
+                class="font-mono text-sm font-semibold tabular-nums text-ink-muted"
+              >
+                {year}
+              </h2>
+              <span class="font-mono text-xs tabular-nums text-ink-faint">
+                {yearPosts.length} {yearPosts.length === 1 ? "post" : "posts"}
+              </span>
+            </div>
+
+            <div class="divide-y divide-line border-b border-t border-line">
+              {yearPosts.map((post) => <PostRow post={post} />)}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

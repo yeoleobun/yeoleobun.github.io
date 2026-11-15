@@ -1,24 +1,62 @@
 ---
-import { getCollection } from "astro:content";
-import Header from "@components/Header.astro";
-import Footer from "@components/Footer.astro";
-import Layout from "@layouts/Layout.astro";
-import Main from "@layouts/Main.astro";
-import Tag from "@components/Tag.astro";
-import getUniqueTags from "@utils/getUniqueTags";
-import { SITE } from "@config";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import {
+  getAllTagGroups,
+  getPublishedPosts,
+  getTagHref,
+} from "@/utils/blog";
+import { SITE } from "@/site";
 
-const posts = await getCollection("blog");
-
-let tags = getUniqueTags(posts);
+const posts = await getPublishedPosts();
+const tagGroups = getAllTagGroups(posts);
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
-  <Header activeNav="tags" />
-  <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    <ul>
-      {tags.map(({ tag }) => <Tag {tag} size="lg" />)}
-    </ul>
-  </Main>
-  <Footer />
-</Layout>
+<BaseLayout
+  title={`Tags — ${SITE.title}`}
+  description="Browse all technical blog posts by topic."
+  activeNav="writing"
+>
+  <section class="mx-auto max-w-4xl px-4 pb-20 pt-10 sm:px-6 sm:pt-12">
+    <nav class="mb-6 flex items-center gap-2 text-sm text-ink-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-ink">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/posts/" class="transition-colors hover:text-ink">Writing</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">Tags</span>
+    </nav>
+
+    <header class="border-b border-line pb-8">
+      <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        Tags
+      </h1>
+      <p class="mt-2 text-base text-ink-muted">
+        {tagGroups.length} topics across {posts.length} articles.
+      </p>
+    </header>
+
+    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        tagGroups.map((group) => (
+          <a
+            href={getTagHref(group.slug)}
+            class="group flex flex-col justify-between rounded-xl border border-line bg-surface p-4 transition-colors hover:border-accent/40"
+          >
+            <div class="flex items-baseline justify-between gap-2">
+              <span class="font-medium text-ink transition-colors group-hover:text-accent">
+                # {group.label}
+              </span>
+              <span class="font-mono text-xs tabular-nums text-ink-faint">
+                {group.count} {group.count === 1 ? "post" : "posts"}
+              </span>
+            </div>
+            {group.posts[0] && (
+              <p class="mt-2 truncate text-xs text-ink-muted">
+                Latest: {group.posts[0].data.title}
+              </p>
+            )}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

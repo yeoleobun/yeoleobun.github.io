@@ -1,0 +1,90 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ProjectShowcaseCard from "@/components/ProjectShowcaseCard.astro";
+import { PROJECTS } from "@/data/projects";
+import { SITE } from "@/site";
+---
+
+<BaseLayout
+  title={`Projects — ${SITE.title}`}
+  description="Native macOS developer tools built by yeoleobun: Quota and Grove."
+  activeNav="projects"
+>
+  <section class="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-12">
+    <nav class="mb-6 flex items-center gap-2 text-sm text-ink-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-ink">Home</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">Projects</span>
+    </nav>
+
+    <div
+      class="mb-8 flex flex-col gap-4 border-b border-line pb-8 sm:flex-row sm:items-end sm:justify-between"
+    >
+      <div>
+        <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          Projects
+        </h1>
+        <p class="mt-2 max-w-2xl text-base text-ink-muted">
+          Focused, native macOS utilities written in Swift — designed for
+          Apple Silicon with zero background bloat.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        data-copy-button
+        data-copy-text={`brew tap ${SITE.homebrewTap}`}
+        data-copy-label={`brew tap ${SITE.homebrewTap}`}
+        class="tap-pill inline-flex w-fit shrink-0 whitespace-nowrap items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 font-mono text-xs text-ink-muted transition-colors hover:border-accent/40 hover:text-ink"
+      >
+        <span class="select-none text-ink-faint">$</span>
+        <span data-copy-text-label>brew tap {SITE.homebrewTap}</span>
+        <svg
+          class="copy-icon h-3.5 w-3.5 text-ink-faint"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+        <svg
+          class="check-icon hidden h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-8">
+      {PROJECTS.map((project) => <ProjectShowcaseCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .tap-pill[data-copied="true"] {
+    border-color: rgb(16 185 129 / 0.5);
+    color: rgb(5 150 105);
+  }
+  :global(html[data-theme="dark"]) .tap-pill[data-copied="true"] {
+    color: rgb(52 211 153);
+  }
+  .tap-pill[data-copied="true"] .copy-icon {
+    display: none;
+  }
+  .tap-pill[data-copied="true"] .check-icon {
+    display: block;
+  }
+</style>

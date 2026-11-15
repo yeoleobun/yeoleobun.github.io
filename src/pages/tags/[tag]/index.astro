@@ -1,0 +1,93 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostRow from "@/components/PostRow.astro";
+import {
+  getAllTagGroups,
+  getPublishedPosts,
+  getTagHref,
+  type TagGroup,
+} from "@/utils/blog";
+import { SITE } from "@/site";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const tagGroups = getAllTagGroups(posts);
+
+  return tagGroups.map((group) => ({
+    params: { tag: group.slug },
+    props: {
+      group,
+      allTags: tagGroups,
+    },
+  }));
+}
+
+export interface Props {
+  group: TagGroup;
+  allTags: TagGroup[];
+}
+
+const { group, allTags } = Astro.props;
+---
+
+<BaseLayout
+  title={`# ${group.label} — ${SITE.title}`}
+  description={`Articles tagged with ${group.label} by ${SITE.name}.`}
+  activeNav="writing"
+>
+  <section class="mx-auto max-w-4xl px-4 pb-20 pt-10 sm:px-6 sm:pt-12">
+    <nav class="mb-6 flex items-center gap-2 text-sm text-ink-muted" aria-label="Breadcrumb">
+      <a href="/" class="transition-colors hover:text-ink">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/tags/" class="transition-colors hover:text-ink">Tags</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">{group.label}</span>
+    </nav>
+
+    <header class="border-b border-line pb-8">
+      <div class="flex flex-wrap items-baseline gap-3">
+        <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          # {group.label}
+        </h1>
+        <span class="font-mono text-sm tabular-nums text-ink-faint">
+          {group.count} {group.count === 1 ? "post" : "posts"}
+        </span>
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-2">
+        {
+          allTags.map((tag) => (
+            <a
+              href={getTagHref(tag.slug)}
+              class:list={[
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                tag.slug === group.slug
+                  ? "border-accent/50 bg-accent/10 text-accent"
+                  : "border-line bg-surface text-ink-muted hover:border-accent/40 hover:text-accent",
+              ]}
+            >
+              <span>{tag.label}</span>
+              <span class="font-mono text-[11px] opacity-75 tabular-nums">
+                {tag.count}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </header>
+
+    <div class="mt-8 divide-y divide-line border-b border-t border-line">
+      {group.posts.map((post) => <PostRow post={post} />)}
+    </div>
+
+    <div class="mt-8">
+      <a
+        href="/posts/"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition-colors hover:text-ink"
+      >
+        <span aria-hidden="true">←</span>
+        <span>View all writing</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

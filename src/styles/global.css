@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  html[data-theme="light"] {
+    --bg: 250 249 246;
+    --surface: 255 255 255;
+    --surface-muted: 243 241 236;
+    --border: 231 229 224;
+    --ink: 24 24 27;
+    --ink-muted: 87 83 78;
+    --ink-faint: 138 133 125;
+    --accent: 0 102 204;
+    color-scheme: light;
+  }
+
+  html[data-theme="dark"] {
+    --bg: 15 16 18;
+    --surface: 23 25 28;
+    --surface-muted: 31 34 39;
+    --border: 39 42 48;
+    --ink: 244 244 245;
+    --ink-muted: 161 161 170;
+    --ink-faint: 113 113 122;
+    --accent: 88 166 255;
+    color-scheme: dark;
+  }
+
+  html {
+    overflow-y: scroll;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply flex min-h-[100svh] flex-col bg-canvas font-sans text-ink selection:bg-accent/20 selection:text-ink;
+  }
+
+  a {
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+  }
+
+  button {
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+  }
+
+  /* Shiki dual-theme support */
+  html[data-theme="dark"] .astro-code,
+  html[data-theme="dark"] .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  /* MathJax CHTML layout & mobile overflow protection */
+  mjx-container {
+    color: inherit;
+  }
+
+  mjx-container[jax="CHTML"][display="true"] {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    padding: 0.5rem 0;
+  }
+
+  /* Subtle custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--bg));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--border));
+    border-radius: 9999px;
+    border: 2px solid rgb(var(--bg));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--ink-faint));
+  }
+}
+
+@layer components {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .article-prose {
+    @apply prose prose-neutral max-w-none text-[16px] leading-[1.82] text-ink;
+    @apply prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-ink;
+    @apply prose-h2:mt-10 prose-h2:border-b prose-h2:border-line/70 prose-h2:pb-2 prose-h2:text-xl sm:prose-h2:text-2xl;
+    @apply prose-h3:mt-7 prose-h3:text-lg;
+    @apply prose-p:my-4 prose-p:text-ink/90;
+    @apply prose-a:font-medium prose-a:text-accent prose-a:underline prose-a:decoration-accent/35 prose-a:underline-offset-4 hover:prose-a:decoration-accent;
+    @apply prose-strong:font-semibold prose-strong:text-ink;
+    @apply prose-blockquote:my-6 prose-blockquote:rounded-r-xl prose-blockquote:border-l-2 prose-blockquote:border-accent/60 prose-blockquote:bg-surface-muted/50 prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:text-ink-muted;
+    @apply prose-code:rounded-md prose-code:border prose-code:border-line/70 prose-code:bg-surface-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono prose-code:text-[0.875em] prose-code:font-normal prose-code:text-ink;
+    @apply prose-pre:my-6 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:border prose-pre:border-line prose-pre:p-4 prose-pre:text-[13.5px] prose-pre:leading-relaxed;
+    @apply prose-ul:my-4 prose-ol:my-4 prose-li:my-1.5 prose-li:text-ink/90 prose-li:marker:text-ink-faint;
+    @apply prose-hr:my-8 prose-hr:border-line;
+    @apply prose-img:mx-auto prose-img:my-6 prose-img:rounded-xl prose-img:border prose-img:border-line/70 prose-img:shadow-sm;
+    @apply prose-table:my-6 prose-table:w-full prose-table:border-collapse prose-table:text-sm;
+    @apply prose-thead:border-b prose-thead:border-line prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-semibold prose-th:text-ink;
+    @apply prose-td:border-b prose-td:border-line/60 prose-td:px-3 prose-td:py-2 prose-td:text-ink/90;
+  }
+
+  .article-prose pre code {
+    @apply border-0 bg-transparent p-0 font-mono text-[inherit];
+  }
+
+  .article-prose .footnotes {
+    @apply mt-12 border-t border-line pt-6 text-sm text-ink-muted;
+  }
+
+  .article-prose .footnotes ol {
+    @apply pl-5;
+  }
+
+  .article-prose .heading-anchor {
+    @apply ml-2 font-mono text-sm font-normal text-ink-faint no-underline opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 hover:text-accent;
+  }
+}

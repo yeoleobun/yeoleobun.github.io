@@ -1,56 +1,37 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
-import react from "@astrojs/react";
-import rehypeMathjax from 'rehype-mathjax/chtml'
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
-import remarkMath from 'remark-math'
 import sitemap from "@astrojs/sitemap";
-import { SITE } from "./src/config";
+import remarkMath from "remark-math";
+import rehypeMathjax from "rehype-mathjax/chtml";
+import { SITE } from "./src/site";
 
 export default defineConfig({
-  site: SITE.website,
+  site: SITE.url,
   integrations: [
     tailwind({
       applyBaseStyles: false,
     }),
-    react(),
     sitemap(),
   ],
   markdown: {
-    remarkPlugins: [
-      remarkMath,
-      remarkToc,
-      [
-        remarkCollapse,
-        {
-          test: "Table of contents",
-        },
-      ],
-    ],
+    remarkPlugins: [remarkMath],
     rehypePlugins: [
       [
         rehypeMathjax,
         {
           chtml: {
-            fontURL: 'https://cdn.jsdelivr.net/npm/mathjax/es5/output/chtml/fonts/woff-v2'
-          }
-        }
-      ]
+            fontURL:
+              "https://cdn.jsdelivr.net/npm/mathjax/es5/output/chtml/fonts/woff-v2",
+          },
+        },
+      ],
     ],
     shikiConfig: {
-      // For more themes, visit https://shiki.style/themes
-      themes: { light: "min-light", dark: "night-owl" },
+      themes: {
+        light: "github-light",
+        dark: "github-dark-dimmed",
+      },
       wrap: true,
     },
-  },
-  vite: {
-    optimizeDeps: {
-      exclude: ["@resvg/resvg-js"],
-    },
-  },
-  scopedStyleStrategy: "where",
-  experimental: {
-    contentLayer: true,
   },
 });

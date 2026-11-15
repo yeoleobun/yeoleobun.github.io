@@ -1,0 +1,321 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { PROJECTS, type Project } from "@/data/projects";
+import { SITE } from "@/site";
+
+export function getStaticPaths() {
+  return PROJECTS.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+export interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const sibling = PROJECTS.find((p) => p.slug !== project.slug)!;
+const isAmber = project.accent === "amber";
+
+const versionBadgeClass = isAmber
+  ? "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+  : "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
+
+const stageBgClass = isAmber
+  ? "from-amber-50/90 via-stone-100/80 to-orange-50/70 dark:from-amber-950/25 dark:via-zinc-900/90 dark:to-stone-900/80"
+  : "from-emerald-50/80 via-stone-100/80 to-teal-50/70 dark:from-emerald-950/25 dark:via-zinc-900/90 dark:to-stone-900/80";
+---
+
+<BaseLayout
+  title={`${project.name} — ${project.subtitle} | ${SITE.title}`}
+  description={project.tagline}
+  activeNav="projects"
+>
+  <article class="mx-auto max-w-5xl px-4 pb-20 pt-10 sm:px-6 sm:pt-12">
+    <!-- Breadcrumb -->
+    <nav
+      class="mb-8 flex flex-wrap items-center gap-2 text-sm text-ink-muted"
+      aria-label="Breadcrumb"
+    >
+      <a href="/" class="transition-colors hover:text-ink">← Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/projects/" class="transition-colors hover:text-ink">Projects</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink">{project.name}</span>
+    </nav>
+
+    <!-- Project Hero -->
+    <header class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex items-start gap-4 sm:gap-5">
+        <Image
+          src={project.icon}
+          alt={`${project.name} app icon`}
+          widths={[160, 320]}
+          sizes="80px"
+          class="h-16 w-16 shrink-0 select-none sm:h-20 sm:w-20"
+        />
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+              {project.name}
+            </h1>
+            <span
+              class:list={[
+                "rounded-full border px-2.5 py-0.5 font-mono text-xs font-medium tabular-nums",
+                versionBadgeClass,
+              ]}
+            >
+              {project.version}
+            </span>
+          </div>
+          <p class="mt-1 text-base font-medium text-ink-muted">
+            {project.subtitle}
+          </p>
+          <div class="mt-3 flex flex-wrap items-center gap-1.5">
+            <span class="rounded-md border border-line bg-surface px-2 py-0.5 text-xs font-medium text-ink-muted">
+              {project.platform}
+            </span>
+            {
+              project.stack.map((tech) => (
+                <span class="rounded-md border border-line bg-surface-muted/60 px-2 py-0.5 font-mono text-xs text-ink-muted">
+                  {tech}
+                </span>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5 sm:shrink-0">
+        <a
+          href={project.releaseUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-canvas transition-opacity hover:opacity-90"
+        >
+          <span>Download {project.dmgName}</span>
+        </a>
+        <a
+          href={project.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-surface-muted"
+        >
+          <span>GitHub</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+
+    <p class="mt-6 max-w-3xl text-base leading-relaxed text-ink-muted sm:text-lg">
+      {project.tagline}
+    </p>
+
+    <!-- Screenshot Stage -->
+    <div
+      class:list={[
+        "mt-8 overflow-hidden rounded-2xl border border-line bg-gradient-to-br p-6 sm:p-10",
+        stageBgClass,
+      ]}
+    >
+      {
+        project.layout === "popover" ? (
+          <Image
+            src={project.screenshot}
+            alt={project.screenshotAlt}
+            widths={[480, 800]}
+            sizes="(max-width: 768px) 100vw, 440px"
+            class="mx-auto max-h-[520px] w-auto object-contain drop-shadow-sm"
+          />
+        ) : (
+          <Image
+            src={project.screenshot}
+            alt={project.screenshotAlt}
+            widths={[800, 1400, 2352]}
+            sizes="(max-width: 1024px) 100vw, 960px"
+            class="mx-auto h-auto w-full max-w-4xl object-contain"
+          />
+        )
+      }
+    </div>
+
+    <!-- Install on macOS -->
+    <section class="mt-14">
+      <div class="mb-5">
+        <h2 class="text-2xl font-semibold tracking-tight text-ink">
+          Install on macOS (Apple Silicon)
+        </h2>
+        <p class="mt-1 text-sm text-ink-muted">
+          Choose Homebrew, the one-line installer script, or manual `.dmg`
+          installation.
+        </p>
+      </div>
+
+      <div class="grid gap-4 lg:grid-cols-3">
+        {
+          project.fullInstall.map((option, index) => (
+            <div class="flex flex-col justify-between gap-4 rounded-xl border border-line bg-surface p-5">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-mono text-xs text-ink-faint">
+                    0{index + 1}
+                  </span>
+                  <h3 class="text-base font-semibold text-ink">
+                    {option.title}
+                  </h3>
+                </div>
+                {option.badge && (
+                  <p class="mt-1.5 inline-block rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                    {option.badge}
+                  </p>
+                )}
+                <p class="mt-2.5 text-sm leading-relaxed text-ink-muted">
+                  {option.description}
+                </p>
+              </div>
+
+              <div class="overflow-hidden rounded-lg border border-line bg-surface-muted/65">
+                <div class="flex items-center justify-between border-b border-line/70 px-3 py-1.5">
+                  <span class="font-mono text-[11px] text-ink-faint">zsh</span>
+                  <button
+                    type="button"
+                    data-copy-button
+                    data-copy-text={option.code}
+                    data-copy-label="Copy"
+                    class="copy-btn inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-ink-muted transition-colors hover:bg-surface hover:text-ink"
+                  >
+                    <span data-copy-text-label>Copy</span>
+                  </button>
+                </div>
+                <pre class="overflow-x-auto p-3 font-mono text-xs leading-relaxed text-ink"><code>{option.code}</code></pre>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="mt-14">
+      <h2 class="mb-5 text-2xl font-semibold tracking-tight text-ink">
+        Features
+      </h2>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        {
+          project.features.map((feature) => (
+            <div class="rounded-xl border border-line bg-surface p-5">
+              <h3 class="text-base font-semibold text-ink">{feature.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                {feature.description}
+              </p>
+              {feature.codeHint && (
+                <p class="mt-3">
+                  <code class="rounded-md border border-line bg-surface-muted px-2 py-0.5 font-mono text-xs text-ink">
+                    {feature.codeHint}
+                  </code>
+                </p>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Prerequisites & Build from Source -->
+    <section class="mt-14 grid gap-4 md:grid-cols-2">
+      <div class="rounded-xl border border-line bg-surface p-6">
+        <h2 class="text-lg font-semibold text-ink">Prerequisites</h2>
+        <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+          {
+            project.prerequisites.map((req) => (
+              <li class="flex items-start gap-2.5">
+                <span
+                  class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink-faint"
+                  aria-hidden="true"
+                />
+                <span>{req}</span>
+              </li>
+            ))
+          }
+        </ul>
+        {
+          project.notes && (
+            <p class="mt-4 border-t border-line pt-4 text-xs leading-relaxed text-ink-faint">
+              {project.notes}
+            </p>
+          )
+        }
+      </div>
+
+      <div class="rounded-xl border border-line bg-surface p-6">
+        <h2 class="text-lg font-semibold text-ink">Build & Test from Source</h2>
+        <p class="mt-2 text-sm text-ink-muted">
+          Clone the repository and build the native `.app` bundle locally:
+        </p>
+
+        <div class="mt-3 overflow-hidden rounded-lg border border-line bg-surface-muted/65">
+          <div class="flex items-center justify-between border-b border-line/70 px-3 py-1.5">
+            <span class="font-mono text-[11px] text-ink-faint">build & run</span>
+            <button
+              type="button"
+              data-copy-button
+              data-copy-text={project.buildCommands}
+              data-copy-label="Copy"
+              class="copy-btn inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-ink-muted transition-colors hover:bg-surface hover:text-ink"
+            >
+              <span data-copy-text-label>Copy</span>
+            </button>
+          </div>
+          <pre class="overflow-x-auto p-3 font-mono text-xs leading-relaxed text-ink"><code>{project.buildCommands}</code></pre>
+        </div>
+
+        <p class="mt-3 text-xs text-ink-muted">
+          Run test suite:{" "}
+          <code class="rounded border border-line bg-surface-muted px-1.5 py-0.5 font-mono text-ink">
+            {project.testCommand}
+          </code>
+        </p>
+      </div>
+    </section>
+
+    <!-- Sibling Project Cross-Link -->
+    <section class="mt-14 border-t border-line pt-10">
+      <a
+        href={`/projects/${sibling.slug}/`}
+        class="group flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6 transition-all hover:border-accent/40 hover:shadow-sm sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="flex items-center gap-4">
+          <Image
+            src={sibling.icon}
+            alt={`${sibling.name} app icon`}
+            widths={[128]}
+            sizes="56px"
+            class="h-12 w-12 shrink-0 select-none sm:h-14 sm:w-14"
+          />
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-ink-faint">
+              Next Project
+            </p>
+            <h3 class="mt-0.5 text-lg font-semibold text-ink transition-colors group-hover:text-accent">
+              {sibling.name} — {sibling.subtitle}
+            </h3>
+            <p class="mt-0.5 text-sm text-ink-muted">{sibling.tagline}</p>
+          </div>
+        </div>
+        <span class="shrink-0 text-sm font-medium text-accent">Explore →</span>
+      </a>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .copy-btn[data-copied="true"] {
+    color: rgb(5 150 105);
+  }
+  :global(html[data-theme="dark"]) .copy-btn[data-copied="true"] {
+    color: rgb(52 211 153);
+  }
+</style>

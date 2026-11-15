@@ -1,0 +1,97 @@
+---
+export interface Props {
+  homebrew: string;
+  curl: string;
+}
+
+const { homebrew, curl } = Astro.props;
+---
+
+<div
+  data-install-box
+  class="overflow-hidden rounded-xl border border-line bg-surface-muted/65"
+>
+  <div
+    class="flex items-center justify-between gap-2 border-b border-line/70 px-3 py-1.5"
+  >
+    <div class="flex items-center gap-1" role="tablist" aria-label="Install method">
+      <button
+        type="button"
+        role="tab"
+        aria-selected="true"
+        data-install-tab="homebrew"
+        data-install-command={homebrew}
+        data-active="true"
+        class="rounded-md px-2 py-0.5 text-xs font-medium text-ink-muted transition-colors data-[active=true]:bg-surface data-[active=true]:text-ink data-[active=true]:shadow-2xs hover:text-ink"
+      >
+        Homebrew
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected="false"
+        data-install-tab="curl"
+        data-install-command={curl}
+        data-active="false"
+        class="rounded-md px-2 py-0.5 text-xs font-medium text-ink-muted transition-colors data-[active=true]:bg-surface data-[active=true]:text-ink data-[active=true]:shadow-2xs hover:text-ink"
+      >
+        curl
+      </button>
+    </div>
+
+    <button
+      type="button"
+      data-copy-button
+      data-copy-text={homebrew}
+      data-copy-label="Copy"
+      class="copy-btn inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium text-ink-muted transition-colors hover:bg-surface hover:text-ink"
+    >
+      <svg
+        class="copy-icon h-3.5 w-3.5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+      <svg
+        class="check-icon hidden h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+      <span data-copy-text-label>Copy</span>
+    </button>
+  </div>
+
+  <div class="flex items-center gap-2 overflow-x-auto px-3.5 py-2.5 font-mono text-[12.5px]">
+    <span class="select-none text-ink-faint" aria-hidden="true">$</span>
+    <code data-install-code class="whitespace-nowrap text-ink">{homebrew}</code>
+  </div>
+</div>
+
+<style>
+  .copy-btn[data-copied="true"] {
+    color: rgb(5 150 105);
+  }
+  :global(html[data-theme="dark"]) .copy-btn[data-copied="true"] {
+    color: rgb(52 211 153);
+  }
+  .copy-btn[data-copied="true"] .copy-icon {
+    display: none;
+  }
+  .copy-btn[data-copied="true"] .check-icon {
+    display: block;
+  }
+</style>
