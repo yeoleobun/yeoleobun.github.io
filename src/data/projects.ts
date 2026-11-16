@@ -66,7 +66,7 @@ export const PROJECTS: Project[] = [
     screenshotAlt:
       "Quota native macOS menu bar popover showing OpenAI Codex and Google Antigravity usage rings and reset timers",
     quickInstall: {
-      homebrew: "brew tap yeoleobun/tap && brew install --cask yeoleobun/tap/quota",
+      homebrew: "brew tap yeoleobun/tap\nbrew install --cask yeoleobun/tap/quota",
       curl: "curl -fsSL https://raw.githubusercontent.com/yeoleobun/Quota/main/scripts/install.sh | zsh",
     },
     highlights: [
@@ -152,7 +152,7 @@ export const PROJECTS: Project[] = [
     screenshotAlt:
       "Grove native SwiftUI macOS dashboard showing repository sidebar, branch merge badges, idle timers, and linked worktrees",
     quickInstall: {
-      homebrew: "brew tap yeoleobun/tap && brew install --cask yeoleobun/tap/grove",
+      homebrew: "brew tap yeoleobun/tap\nbrew install --cask yeoleobun/tap/grove",
       curl: "curl -fsSL https://raw.githubusercontent.com/yeoleobun/Grove/main/scripts/install.sh | zsh",
     },
     highlights: [

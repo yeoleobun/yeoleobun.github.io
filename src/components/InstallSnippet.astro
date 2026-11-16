@@ -95,10 +95,10 @@ const codeId = `install-code-${uid}`;
     aria-labelledby={homebrewTabId}
     tabindex="0"
     data-install-panel
-    class="flex items-center gap-2 overflow-x-auto px-3.5 py-2.5 font-mono text-[12.5px]"
+    class="flex items-start gap-2 overflow-x-auto px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed"
   >
     <span class="select-none text-ink-faint" aria-hidden="true">$</span>
-    <code id={codeId} data-install-code class="whitespace-nowrap text-ink">{homebrew}</code>
+    <code id={codeId} data-install-code class="whitespace-pre text-ink">{homebrew}</code>
   </div>
 </div>
 
