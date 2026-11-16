@@ -76,10 +76,7 @@ import { SITE } from "@/site";
 <style>
   .tap-pill[data-copied="true"] {
     border-color: rgb(16 185 129 / 0.5);
-    color: rgb(5 150 105);
-  }
-  :global(html[data-theme="dark"]) .tap-pill[data-copied="true"] {
-    color: rgb(52 211 153);
+    color: light-dark(rgb(5 150 105), rgb(52 211 153));
   }
   .tap-pill[data-copied="true"] .copy-icon {
     display: none;

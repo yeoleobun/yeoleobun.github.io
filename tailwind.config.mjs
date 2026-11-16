@@ -11,7 +11,13 @@ function withOpacity(variableName) {
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: ["selector", "[data-theme='dark']"],
+  darkMode: [
+    "variant",
+    [
+      "@media (prefers-color-scheme: dark) { :root:not(:has(> head > meta[name='color-scheme'][content='light'])) & }",
+      ":root:has(> head > meta[name='color-scheme'][content='dark']) &",
+    ],
+  ],
   content: ["./src/**/*.{astro,html,js,md,mdx,ts}"],
   theme: {
     extend: {

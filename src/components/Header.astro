@@ -168,10 +168,18 @@ const { activeNav = "home" } = Astro.props;
 </header>
 
 <style>
-  :global(html[data-theme="dark"]) #icon-sun {
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not(:has(> head > meta[name="color-scheme"][content="light"]))) #icon-sun {
+      display: block;
+    }
+    :global(:root:not(:has(> head > meta[name="color-scheme"][content="light"]))) #icon-moon {
+      display: none;
+    }
+  }
+  :global(:root:has(> head > meta[name="color-scheme"][content="dark"])) #icon-sun {
     display: block;
   }
-  :global(html[data-theme="dark"]) #icon-moon {
+  :global(:root:has(> head > meta[name="color-scheme"][content="dark"])) #icon-moon {
     display: none;
   }
 </style>

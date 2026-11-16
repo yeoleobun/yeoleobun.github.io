@@ -3,29 +3,52 @@
 @tailwind utilities;
 
 @layer base {
-  :root,
-  html[data-theme="light"] {
-    --bg: 250 249 246;
+  :root {
+    color-scheme: light dark;
+
+    /* Modern cool-neutral light palette */
+    --bg: 250 251 253;
     --surface: 255 255 255;
-    --surface-muted: 243 241 236;
-    --border: 231 229 224;
-    --ink: 24 24 27;
-    --ink-muted: 87 83 78;
-    --ink-faint: 138 133 125;
-    --accent: 0 102 204;
-    color-scheme: light;
+    --surface-muted: 241 245 249;
+    --border: 226 232 240;
+    --ink: 15 23 42;
+    --ink-muted: 71 85 105;
+    --ink-faint: 100 116 139;
+    --accent: 37 99 235;
+
+    --scrollbar-thumb: light-dark(rgb(203 213 225), rgb(51 65 85));
+    --scrollbar-track: light-dark(rgb(250 251 253), rgb(11 15 23));
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: thin;
   }
 
-  html[data-theme="dark"] {
-    --bg: 15 16 18;
-    --surface: 23 25 28;
-    --surface-muted: 31 34 39;
-    --border: 39 42 48;
-    --ink: 244 244 245;
-    --ink-muted: 161 161 170;
-    --ink-faint: 113 113 122;
-    --accent: 88 166 255;
+  @media (prefers-color-scheme: dark) {
+    :root:not(:has(> head > meta[name="color-scheme"][content="light"])) {
+      --bg: 11 15 23;
+      --surface: 17 24 39;
+      --surface-muted: 30 41 59;
+      --border: 38 48 64;
+      --ink: 248 250 252;
+      --ink-muted: 148 163 184;
+      --ink-faint: 100 116 139;
+      --accent: 96 165 250;
+    }
+  }
+
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) {
     color-scheme: dark;
+    --bg: 11 15 23;
+    --surface: 17 24 39;
+    --surface-muted: 30 41 59;
+    --border: 38 48 64;
+    --ink: 248 250 252;
+    --ink-muted: 148 163 184;
+    --ink-faint: 100 116 139;
+    --accent: 96 165 250;
+  }
+
+  :root:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
   }
 
   html {
@@ -47,8 +70,19 @@
   }
 
   /* Shiki dual-theme support */
-  html[data-theme="dark"] .astro-code,
-  html[data-theme="dark"] .astro-code span {
+  @media (prefers-color-scheme: dark) {
+    :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .astro-code,
+    :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .astro-code span {
+      color: var(--shiki-dark) !important;
+      background-color: var(--shiki-dark-bg) !important;
+      font-style: var(--shiki-dark-font-style) !important;
+      font-weight: var(--shiki-dark-font-weight) !important;
+      text-decoration: var(--shiki-dark-text-decoration) !important;
+    }
+  }
+
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .astro-code,
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .astro-code span {
     color: var(--shiki-dark) !important;
     background-color: var(--shiki-dark-bg) !important;
     font-style: var(--shiki-dark-font-style) !important;
@@ -69,24 +103,26 @@
     padding: 0.5rem 0;
   }
 
-  /* Subtle custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
+  /* Legacy fallback for browsers without standard scrollbar-color */
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
 
-  ::-webkit-scrollbar-track {
-    background: rgb(var(--bg));
-  }
+    ::-webkit-scrollbar-track {
+      background: var(--scrollbar-track);
+    }
 
-  ::-webkit-scrollbar-thumb {
-    background: rgb(var(--border));
-    border-radius: 9999px;
-    border: 2px solid rgb(var(--bg));
-  }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 9999px;
+      border: 2px solid var(--scrollbar-track);
+    }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--ink-faint));
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgb(var(--ink-faint));
+    }
   }
 }
 

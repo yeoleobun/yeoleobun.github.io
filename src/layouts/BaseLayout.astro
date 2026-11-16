@@ -27,10 +27,19 @@ const rssURL = new URL("/rss.xml", Astro.site ?? SITE.url).href;
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      try {
+        var stored = localStorage.getItem("color-scheme");
+        if (stored === "light" || stored === "dark") {
+          document.querySelector('meta[name="color-scheme"]').content = stored;
+        }
+      } catch (e) {}
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -78,21 +87,6 @@ const rssURL = new URL("/rss.xml", Astro.site ?? SITE.url).href;
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-
-    <script is:inline>
-      (function () {
-        try {
-          var stored = localStorage.getItem("theme");
-          var preferred = window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "dark"
-            : "light";
-          var theme =
-            stored === "dark" || stored === "light" ? stored : preferred;
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch (e) {}
-      })();
-    </script>
   </head>
   <body>
     <a
@@ -112,69 +106,193 @@ const rssURL = new URL("/rss.xml", Astro.site ?? SITE.url).href;
 
     <script is:inline>
       (function () {
-        var root = document.documentElement;
+        var meta = document.querySelector('meta[name="color-scheme"]');
         var themeBtn = document.getElementById("theme-toggle");
+        var mql = window.matchMedia("(prefers-color-scheme: dark)");
+
+        function getSystemScheme() {
+          return mql.matches ? "dark" : "light";
+        }
+
+        function getRenderedScheme() {
+          if (meta && (meta.content === "dark" || meta.content === "light")) {
+            return meta.content;
+          }
+          return getSystemScheme();
+        }
 
         function updateThemeLabel() {
           if (!themeBtn) return;
-          var current = root.getAttribute("data-theme") || "light";
-          themeBtn.setAttribute(
-            "aria-label",
-            current === "dark" ? "Switch to light mode" : "Switch to dark mode"
-          );
-          themeBtn.setAttribute(
-            "title",
-            current === "dark" ? "Switch to light mode" : "Switch to dark mode"
-          );
+          var current = getRenderedScheme();
+          var label =
+            current === "dark" ? "Switch to light mode" : "Switch to dark mode";
+          themeBtn.setAttribute("aria-label", label);
+          themeBtn.setAttribute("title", label);
         }
 
         updateThemeLabel();
 
-        if (themeBtn) {
+        if (themeBtn && meta) {
           themeBtn.addEventListener("click", function () {
-            var current = root.getAttribute("data-theme") || "light";
-            var next = current === "dark" ? "light" : "dark";
-            root.setAttribute("data-theme", next);
-            try {
-              localStorage.setItem("theme", next);
-            } catch (e) {}
+            var target = getRenderedScheme() === "dark" ? "light" : "dark";
+            if (target !== getSystemScheme()) {
+              meta.content = target;
+              try {
+                localStorage.setItem("color-scheme", target);
+              } catch (e) {}
+            } else {
+              meta.content = "light dark";
+              try {
+                localStorage.removeItem("color-scheme");
+              } catch (e) {}
+            }
             updateThemeLabel();
           });
         }
 
+        window.addEventListener("storage", function (event) {
+          if (event.key !== "color-scheme" || !meta) return;
+          meta.content =
+            event.newValue === "light" || event.newValue === "dark"
+              ? event.newValue
+              : "light dark";
+          updateThemeLabel();
+        });
+
         try {
-          window
-            .matchMedia("(prefers-color-scheme: dark)")
-            .addEventListener("change", function (event) {
-              var stored = null;
-              try {
-                stored = localStorage.getItem("theme");
-              } catch (e) {}
-              if (!stored) {
-                root.setAttribute(
-                  "data-theme",
-                  event.matches ? "dark" : "light"
-                );
-                updateThemeLabel();
-              }
-            });
+          mql.addEventListener("change", updateThemeLabel);
         } catch (e) {}
 
-        function showCopiedState(button) {
+        var lastCopyMessage = "";
+        var copyTimers = new WeakMap();
+
+        function getStatusRegion(button) {
+          var next = button.nextElementSibling;
+          if (next && next.hasAttribute("data-copy-status")) return next;
+          var globalStatus = document.getElementById("global-copy-status");
+          if (!globalStatus) {
+            globalStatus = document.createElement("span");
+            globalStatus.id = "global-copy-status";
+            globalStatus.className = "sr-only";
+            globalStatus.setAttribute("role", "status");
+            document.body.appendChild(globalStatus);
+          }
+          return globalStatus;
+        }
+
+        function reportCopy(button, ok) {
           var original = button.getAttribute("data-copy-label") || "Copy";
           var labelEl = button.querySelector("[data-copy-text-label]");
-          button.setAttribute("data-copied", "true");
+          var statusEl = getStatusRegion(button);
+          clearTimeout(copyTimers.get(button));
+          button.removeAttribute("data-copied");
+          button.removeAttribute("data-failed");
+
+          var message = ok ? "Copied" : "Copy failed";
+          if (message === lastCopyMessage) message += "\u00A0";
+          lastCopyMessage = message;
+
+          statusEl.textContent = "";
+          button.setAttribute(ok ? "data-copied" : "data-failed", "true");
           if (labelEl) {
-            labelEl.textContent = "Copied";
+            labelEl.textContent = ok ? "Copied" : "Failed";
           }
-          clearTimeout(button._copyTimer);
-          button._copyTimer = setTimeout(function () {
-            button.removeAttribute("data-copied");
-            if (labelEl) {
-              labelEl.textContent = original;
-            }
-          }, 1500);
+          requestAnimationFrame(function () {
+            statusEl.textContent = message;
+          });
+
+          copyTimers.set(
+            button,
+            setTimeout(function () {
+              button.removeAttribute("data-copied");
+              button.removeAttribute("data-failed");
+              if (labelEl) {
+                labelEl.textContent = original;
+              }
+              statusEl.textContent = "";
+            }, 1500)
+          );
         }
+
+        async function performCopy(button, target) {
+          var text = target
+            ? target.matches("input, textarea")
+              ? target.value
+              : target.innerText.trim()
+            : button.getAttribute("data-copy-text");
+          if (!text) return;
+          try {
+            await navigator.clipboard.writeText(text);
+            reportCopy(button, true);
+          } catch (e) {
+            reportCopy(button, false);
+          }
+        }
+
+        function activateInstallTab(tabBtn) {
+          var box = tabBtn.closest("[data-install-box]");
+          if (!box) return;
+          var mode = tabBtn.getAttribute("data-install-tab");
+          var cmd = tabBtn.getAttribute("data-install-command") || "";
+          var codeEl = box.querySelector("[data-install-code]");
+          var panelEl = box.querySelector("[data-install-panel]");
+          var copyBtn = box.querySelector("[data-copy-button]");
+          if (codeEl) codeEl.textContent = cmd;
+          if (copyBtn) copyBtn.setAttribute("data-copy-text", cmd);
+          if (panelEl && tabBtn.id) {
+            panelEl.setAttribute("aria-labelledby", tabBtn.id);
+          }
+
+          var tabs = box.querySelectorAll("[data-install-tab]");
+          tabs.forEach(function (t) {
+            var active = t.getAttribute("data-install-tab") === mode;
+            t.setAttribute("aria-selected", active ? "true" : "false");
+            t.toggleAttribute("focusgroupstart", active);
+            t.setAttribute("tabindex", active ? "0" : "-1");
+          });
+        }
+
+        document.addEventListener(
+          "command",
+          function (event) {
+            if (event.command === "--copy" && event.source) {
+              performCopy(event.source, event.target);
+            }
+          },
+          true
+        );
+
+        document.addEventListener("keydown", function (event) {
+          var target = event.target;
+          if (!(target instanceof Element)) return;
+          var tabBtn = target.closest("[role='tablist'] [role='tab']");
+          if (!tabBtn) return;
+
+          var keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+          if (keys.indexOf(event.key) === -1) return;
+
+          var tablist = tabBtn.closest("[role='tablist']");
+          if (!tablist) return;
+          var tabs = Array.prototype.slice.call(
+            tablist.querySelectorAll("[role='tab']")
+          );
+          var idx = tabs.indexOf(tabBtn);
+          if (idx === -1) return;
+
+          event.preventDefault();
+          var nextIdx = idx;
+          if (event.key === "ArrowRight") nextIdx = (idx + 1) % tabs.length;
+          else if (event.key === "ArrowLeft")
+            nextIdx = (idx - 1 + tabs.length) % tabs.length;
+          else if (event.key === "Home") nextIdx = 0;
+          else if (event.key === "End") nextIdx = tabs.length - 1;
+
+          var nextTab = tabs[nextIdx];
+          if (nextTab) {
+            activateInstallTab(nextTab);
+            nextTab.focus();
+          }
+        });
 
         document.addEventListener("click", function (event) {
           var target = event.target;
@@ -182,37 +300,24 @@ const rssURL = new URL("/rss.xml", Astro.site ?? SITE.url).href;
 
           var tabBtn = target.closest("[data-install-tab]");
           if (tabBtn) {
-            var box = tabBtn.closest("[data-install-box]");
-            if (box) {
-              var mode = tabBtn.getAttribute("data-install-tab");
-              var cmd = tabBtn.getAttribute("data-install-command") || "";
-              var codeEl = box.querySelector("[data-install-code]");
-              var copyBtn = box.querySelector("[data-copy-button]");
-              if (codeEl) codeEl.textContent = cmd;
-              if (copyBtn) copyBtn.setAttribute("data-copy-text", cmd);
+            activateInstallTab(tabBtn);
+            return;
+          }
 
-              var tabs = box.querySelectorAll("[data-install-tab]");
-              tabs.forEach(function (t) {
-                var active = t.getAttribute("data-install-tab") === mode;
-                t.setAttribute("aria-selected", active ? "true" : "false");
-                t.setAttribute("data-active", active ? "true" : "false");
-              });
+          var invokerBtn = target.closest('button[command="--copy"]');
+          if (invokerBtn) {
+            if (!("CommandEvent" in window)) {
+              var cmdTarget = document.getElementById(
+                invokerBtn.getAttribute("commandfor") || ""
+              );
+              performCopy(invokerBtn, cmdTarget);
             }
             return;
           }
 
           var copyBtn = target.closest("[data-copy-button]");
           if (copyBtn) {
-            var text = copyBtn.getAttribute("data-copy-text");
-            if (!text) return;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard
-                .writeText(text)
-                .then(function () {
-                  showCopiedState(copyBtn);
-                })
-                .catch(function () {});
-            }
+            performCopy(copyBtn, null);
           }
         });
       })();
