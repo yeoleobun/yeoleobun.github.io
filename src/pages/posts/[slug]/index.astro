@@ -1,4 +1,5 @@
 ---
+import { render } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import {
   estimateReadingTime,
@@ -13,7 +14,7 @@ import { SITE } from "@/site";
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
   return posts.map((post, index) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: {
       post,
       newerPost: index > 0 ? posts[index - 1] : null,
@@ -29,10 +30,10 @@ export interface Props {
 }
 
 const { post, newerPost, olderPost } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 const tags = extractPostTags(post.data.tags);
-const readingTime = estimateReadingTime(post.body);
+const readingTime = estimateReadingTime(post.body ?? "");
 const pubDateStr = formatDateISO(post.data.pubDatetime);
 const modDateStr = post.data.modDatetime
   ? formatDateISO(post.data.modDatetime)
@@ -126,7 +127,7 @@ const modDateStr = post.data.modDatetime
         >
           {newerPost ? (
             <a
-              href={`/posts/${newerPost.slug}/`}
+              href={`/posts/${newerPost.id}/`}
               class="group rounded-xl border border-line bg-surface p-4 transition-colors hover:border-accent/40"
             >
               <span class="text-xs font-medium text-ink-faint">
@@ -142,7 +143,7 @@ const modDateStr = post.data.modDatetime
 
           {olderPost && (
             <a
-              href={`/posts/${olderPost.slug}/`}
+              href={`/posts/${olderPost.id}/`}
               class="group rounded-xl border border-line bg-surface p-4 text-right transition-colors hover:border-accent/40"
             >
               <span class="text-xs font-medium text-ink-faint">

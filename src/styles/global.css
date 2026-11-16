@@ -1,6 +1,34 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    :root:not(:has(> head > meta[name="color-scheme"][content="light"])) & {
+      @slot;
+    }
+  }
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) & {
+    @slot;
+  }
+}
+
+@theme inline {
+  --color-canvas: rgb(var(--bg));
+  --color-surface: rgb(var(--surface));
+  --color-surface-muted: rgb(var(--surface-muted));
+  --color-ink: rgb(var(--ink));
+  --color-ink-muted: rgb(var(--ink-muted));
+  --color-ink-faint: rgb(var(--ink-faint));
+  --color-line: rgb(var(--border));
+  --color-accent: rgb(var(--accent));
+
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-mono:
+    "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Monaco, Consolas,
+    monospace;
+}
 
 @layer base {
   :root {
@@ -148,6 +176,11 @@
     @apply prose-table:my-6 prose-table:w-full prose-table:border-collapse prose-table:text-sm;
     @apply prose-thead:border-b prose-thead:border-line prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-semibold prose-th:text-ink;
     @apply prose-td:border-b prose-td:border-line/60 prose-td:px-3 prose-td:py-2 prose-td:text-ink/90;
+  }
+
+  .article-prose :not(pre) > code::before,
+  .article-prose :not(pre) > code::after {
+    content: none;
   }
 
   .article-prose pre code {

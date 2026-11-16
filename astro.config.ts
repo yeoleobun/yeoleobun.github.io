@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 import remarkMath from "remark-math";
 import rehypeMathjax from "rehype-mathjax/chtml";
@@ -7,12 +7,10 @@ import { SITE } from "./src/site";
 
 export default defineConfig({
   site: SITE.url,
-  integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
-    sitemap(),
-  ],
+  integrations: [sitemap()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [
