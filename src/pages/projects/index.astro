@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import MacosUseSection from "@/components/MacosUseSection.astro";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard.astro";
 import { PROJECTS } from "@/data/projects";
 import { SITE } from "@/site";
@@ -7,7 +8,7 @@ import { SITE } from "@/site";
 
 <BaseLayout
   title={`Projects — ${SITE.title}`}
-  description="Native macOS developer tools built by yeoleobun: Quota and Grove."
+  description="Native macOS developer tools built by yeoleobun: macos-use, Quota, and Grove."
   activeNav="projects"
 >
   <section class="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-12">
@@ -68,6 +69,7 @@ import { SITE } from "@/site";
     </div>
 
     <div class="space-y-8">
+      <MacosUseSection />
       {PROJECTS.map((project) => <ProjectShowcaseCard project={project} />)}
     </div>
   </section>

@@ -1,0 +1,33 @@
+---
+const config = JSON.stringify({
+  mcpServers: { "macos-use": { command: "/opt/homebrew/bin/macos-use", args: ["mcp"] } },
+}, null, 2);
+---
+
+<article id="macos-use" class="scroll-mt-20 rounded-2xl border border-line bg-surface p-6 shadow-sm sm:p-8">
+  <h3 class="text-2xl font-semibold tracking-tight text-ink">macos-use</h3>
+  <p class="mt-1 text-sm text-ink-muted">Apple Silicon · macOS 27+</p>
+  <p class="mt-4 max-w-2xl text-ink-muted">
+    Give an MCP client access to native Mac apps. Inspect windows, find controls by label,
+    and send clicks or keystrokes through a local Swift server.
+  </p>
+  <div class="mt-5 grid gap-5 lg:grid-cols-2">
+    <div class="min-w-0">
+      <h4 class="font-semibold text-ink">Install with Homebrew</h4>
+      <pre class="mt-2 overflow-x-auto rounded-lg bg-surface-muted p-4 text-sm"><code>brew install yeoleobun/tap/macos-use</code></pre>
+      <p class="mt-3 text-sm text-ink-muted">
+        Grant Accessibility for input and Screen Recording for screenshots. Call
+        <code>system_status</code> from your client to check its permissions.
+      </p>
+    </div>
+    <div class="min-w-0">
+      <h4 class="font-semibold text-ink">MCP client configuration</h4>
+      <pre class="mt-2 overflow-x-auto rounded-lg bg-surface-muted p-4 text-sm"><code>{config}</code></pre>
+      <p class="mt-2 text-sm text-ink-muted">For a custom Homebrew prefix, use the full path from <code>command -v macos-use</code>.</p>
+    </div>
+  </div>
+  <div class="mt-5 flex gap-5 text-sm font-medium text-accent">
+    <a href="https://github.com/yeoleobun/macos-use">GitHub repository</a>
+    <a href="https://github.com/yeoleobun/macos-use/releases/latest">Download release</a>
+  </div>
+</article>

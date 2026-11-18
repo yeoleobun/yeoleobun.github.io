@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import MacosUseSection from "@/components/MacosUseSection.astro";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard.astro";
 import PostRow from "@/components/PostRow.astro";
 import { SITE } from "@/site";
@@ -106,7 +107,7 @@ const recentPosts = allPosts.slice(0, 8);
           Projects
         </h2>
         <p class="mt-1 text-sm text-ink-muted">
-          Native Swift tools for macOS — distributed via Homebrew Cask and signed
+          Native Swift tools for macOS — distributed via Homebrew and signed
           GitHub Releases.
         </p>
       </div>
@@ -150,6 +151,7 @@ const recentPosts = allPosts.slice(0, 8);
     </div>
 
     <div class="space-y-8">
+      <MacosUseSection />
       {PROJECTS.map((project) => <ProjectShowcaseCard project={project} />)}
     </div>
   </section>
